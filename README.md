@@ -30,7 +30,7 @@ and Push Notification support.
 
 1. Install [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/install/)
 1. `cp .env.example .env`
-1. Grab an Application API key from the Dashboard and paste it in `.env` as `API_KEY`
+1. Grab an Application API key from the [Dashboard](https://www.twilio.com/console/authy/getting-started) and paste it in `.env` as `API_KEY`
 1. `./start`
 
 ## Run without Docker
@@ -52,7 +52,7 @@ see `.env.example` file
 1. Register for a [Twilio Account](https://www.twilio.com/).
 1. Setup an Account Security app via the [Twilio Console](https://twilio.com/console).
 1. `cp .env.example .env`
-1. Grab an Application API key from the Dashboard and paste it in `.env` as `API_KEY`
+1. Grab an Application API key from the [Dashboard](https://www.twilio.com/console/authy/getting-started) and paste it in `.env` as `API_KEY`
 1. Run `php artisan migrate`
 1. Run `php artisan serve --port 8081`
 1. Open the following url in your browser: `http://localhost:8081`
