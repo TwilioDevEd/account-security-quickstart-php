@@ -4,7 +4,7 @@
 
 # Twilio Account Security Quickstart - Two-Factor Authentication and Phone Verification
 
-A simple PHP, Laravel and AngularJS implementation of a website that uses Twilio Account
+A simple **PHP**, **Laravel** and **AngularJS** implementation of a website that uses Twilio Account
 Security services to protect all assets within a folder. Additionally, it shows a Phone
 Verification implementation.
 
