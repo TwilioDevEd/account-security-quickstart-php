@@ -33,8 +33,8 @@ and Push Notification support.
 1. Grab an Application API key from the [Dashboard](https://www.twilio.com/console/authy/getting-started) and paste it in `.env` as `API_KEY`
 1. `./start`
 
-## Run without Docker
-### Pre-requisites
+### Run without Docker
+#### Pre-requisites
 
 - [PHP](http://php.net/archive/2017.php#id2017-10-27-1)
 - [Composer](https://getcomposer.org/)
@@ -42,7 +42,6 @@ and Push Notification support.
 - [MySQL](https://www.mysql.com/), ensure it is running on port `3306` for username, etc
 see `.env.example` file
 
-### Run
 
 1. Clone this repo
     ```bash
