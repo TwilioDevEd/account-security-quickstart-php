@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use \Mockery;
-use App\Library\Services\PhoneVerification;
+use Authy\AuthyApi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,8 +13,8 @@ class PhoneVerificationTest extends TestCase
     {
         parent::setUp();
         $this->withoutExceptionHandling();
-        $this->mockedPhoneVerification = Mockery::mock(PhoneVerification::class);
-        app()->instance(PhoneVerification::class, $this->mockedPhoneVerification);
+        $this->mockedAuthyApi = Mockery::mock(AuthyApi::class);
+        app()->instance(AuthyApi::class, $this->mockedAuthyApi);
     }
 
     public function testStartVerificationSucceeds()
@@ -28,9 +28,9 @@ class PhoneVerificationTest extends TestCase
           'via' => 'sms'
         ];
 
-        $this->mockedPhoneVerification
+        $this->mockedAuthyApi
             ->shouldReceive([
-                'requestVerification' => [
+                'phoneVerificationStart' => [
                     'carrier' => 'Radiomovil Dipsa (Telcel/America Movil)',
                     'is_cellphone' => true,
                     'message' => "SMS Message sent to +{$countryCode} {$phoneNumber}.",
@@ -40,7 +40,7 @@ class PhoneVerificationTest extends TestCase
                 ]
             ])
             ->once()
-            ->with($params);
+            ->with($phoneNumber, $countryCode, 'sms');
 
         $response = $this->post('/api/verification/start', $params);
         $response->assertStatus(200);
@@ -57,8 +57,8 @@ class PhoneVerificationTest extends TestCase
             'via' => 'sms'
         ];
 
-        $this->mockedPhoneVerification
-            ->shouldReceive('requestVerification')
+        $this->mockedAuthyApi
+            ->shouldReceive('phoneVerificationStart')
             ->never();
 
         $response = $this->post('/api/verification/start', $params);
@@ -77,10 +77,10 @@ class PhoneVerificationTest extends TestCase
             'token' => $token
         ];
 
-        $this->mockedPhoneVerification
-            ->shouldReceive(['verifyToken' => ''])
+        $this->mockedAuthyApi
+            ->shouldReceive(['phoneVerificationCheck' => []])
             ->once()
-            ->with($params);
+            ->with($phoneNumber, $countryCode, $token);
 
 
         $response = $this->post('/api/verification/verify', $params);
@@ -99,8 +99,8 @@ class PhoneVerificationTest extends TestCase
             'token' => $token
         ];
 
-        $this->mockedPhoneVerification
-            ->shouldReceive(['verifyToken' => ''])
+        $this->mockedAuthyApi
+            ->shouldReceive(['phoneVerificationCheck' => ''])
             ->never();
 
         $response = $this->post('/api/verification/verify', $params);

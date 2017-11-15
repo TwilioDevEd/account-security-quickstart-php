@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use \Exception;
 use App\Http\Controllers\Controller;
-use App\Library\Services\PhoneVerification;
+use Authy\AuthyApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use \Exception;
 
 class PhoneVerificationController extends Controller
 {
@@ -67,13 +67,14 @@ class PhoneVerificationController extends Controller
      */
     protected function startVerification(
         Request $request,
-        PhoneVerification $PhoneVerification
+        AuthyApi $authyApi
     ) {
         $data = $request->all();
         $validator = $this->verificationRequestValidator($data);
+        extract($data);
 
         if ($validator->passes()) {
-            return $PhoneVerification->requestVerification($data);
+            return $authyApi->phoneVerificationStart($phone_number, $country_code, $via);
         }
 
         return response()->json(['errors'=>$validator->errors()], 403);
@@ -87,14 +88,15 @@ class PhoneVerificationController extends Controller
      */
     protected function verifyCode(
         Request $request,
-        PhoneVerification $PhoneVerification
+        AuthyApi $authyApi
     ) {
         $data = $request->all();
         $validator = $this->verificationCodeValidator($data);
+        extract($data);
 
         if ($validator->passes()) {
             try {
-                $result =  $PhoneVerification->verifyToken($data);
+                $result = $authyApi->phoneVerificationCheck($phone_number, $country_code, $token);
                 return response()->json($result, 200);
             } catch (Exception $e) {
                 $response=[];

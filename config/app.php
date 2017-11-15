@@ -179,7 +179,6 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\OneTouchServiceProvider::class,
-        App\Providers\PhoneVerificationServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
     ],
 
