@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+source .env
+
+CONTAINER_PREFIX=accountsecurityquickstartlaravel
+NETWORK=${CONTAINER_PREFIX}_default
+
+function openNgrokUrl() {
+  NGROK_URL=`curl -s http://127.0.0.1:4040/status | grep -P "https://.*?ngrok.io" -oh`
+
+  if [ "$(uname)" == "Darwin" ]; then
+      # OSX
+      open $NGROK_URL
+  else
+      # Linux
+      xdg-open $NGROK_URL
+  fi
+}
+
+function runMigrations() {
+  tables=$(docker run --link ${CONTAINER_PREFIX}_database_1:db --network $NETWORK --rm \
+  mysql sh -c "mysql -hdb -P$MYSQL_PORT -u${MYSQL_USER} -p${MYSQL_PASSWORD} \
+  -sse 'use $MYSQL_DATABASE; SHOW TABLES;'");
+
+  if ! [ $(echo $tables | grep -o users ) ]; then
+    docker-compose exec app php artisan migrate
+  fi
+}
+
+# stop old containers
+docker stop $(docker ps -a -q --filter "name=$CONTAINER_PREFIX") > /dev/null
+
+# Install composer dependencies
+docker run --rm -it -v $(pwd):/app composer install
+
+# build service images
+docker-compose build
+cp .env.example .env
+
+# Generate laravel server key
+docker run --rm -it -v $(pwd):/var/temp \
+accountsecurityquickstartlaravel_app:latest bash -c "cd /var/temp && php artisan key:generate"
+
+# start services in the background
+docker-compose up --force-recreate &
+
+# wait for containers to be initialized
+sleep 10
+
+runMigrations
+
+# start ngrok
+docker run --name ${CONTAINER_PREFIX}_ngrok -p 0.0.0.0:4040:4040 --rm -d --link ${CONTAINER_PREFIX}_web_1 \
+--net ${NETWORK} wernight/ngrok \
+ngrok http ${CONTAINER_PREFIX}_web_1:80 > /dev/null &
+
+sleep 3
+
+openNgrokUrl
