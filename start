@@ -2,7 +2,7 @@
 
 source .env
 
-CONTAINER_PREFIX=accountsecurityquickstartlaravel
+CONTAINER_PREFIX=accountsecurityquickstartphp
 NETWORK=${CONTAINER_PREFIX}_default
 
 function openNgrokUrl() {
@@ -39,7 +39,7 @@ cp .env.example .env
 
 # Generate laravel server key
 docker run --rm -it -v $(pwd):/var/temp \
-accountsecurityquickstartlaravel_app:latest bash -c "cd /var/temp && php artisan key:generate"
+accountsecurityquickstartphp_app:latest bash -c "cd /var/temp && php artisan key:generate"
 
 # start services in the background
 docker-compose up --force-recreate &
