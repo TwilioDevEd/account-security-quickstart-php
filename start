@@ -35,7 +35,10 @@ docker run --rm -it -v $(pwd):/app composer install
 
 # build service images
 docker-compose build
-cp .env.example .env
+
+if [ ! -f .env ]; then
+  .env.example .env
+fi
 
 # Generate laravel server key
 docker run --rm -it -v $(pwd):/var/temp \
