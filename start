@@ -6,7 +6,7 @@ CONTAINER_PREFIX=accountsecurityquickstartphp
 NETWORK=${CONTAINER_PREFIX}_default
 
 function openNgrokUrl() {
-  NGROK_URL=`curl -s http://127.0.0.1:4040/status | grep -P "https://.*?ngrok.io" -oh`
+  NGROK_URL=`curl -s http://127.0.0.1:4040/status | docker run -i debian:stretch-slim grep -P "https://.*?ngrok.io" -oh`
 
   if [ "$(uname)" == "Darwin" ]; then
       # OSX
