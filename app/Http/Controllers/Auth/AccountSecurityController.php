@@ -9,6 +9,7 @@ use App\User;
 use Authy\AuthyApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AccountSecurityController extends Controller
 {
@@ -44,7 +45,9 @@ class AccountSecurityController extends Controller
         $user_id = session('user_id');
         $user = User::find($user_id);
         $authyID = $user['authyID'];
-        $authyApi->requestSms($authyID, ['force' => 'true']);
+        $response = $authyApi->requestSms($authyID, ['force' => 'true']);
+
+        Log::info($response->message());
 
         return response()->json(['message' => 'Verification Code sent via SMS succesfully.']);
     }

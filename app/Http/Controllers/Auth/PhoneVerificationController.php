@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Authy\AuthyApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class PhoneVerificationController extends Controller
 {
@@ -55,7 +56,7 @@ class PhoneVerificationController extends Controller
         return Validator::make($data, [
             'country_code' => 'required|string|max:3',
             'phone_number' => 'required|string|max:10',
-            'token' => 'required|string|max:4'
+            'token' => 'required|string|max:10'
         ]);
     }
 
@@ -74,7 +75,8 @@ class PhoneVerificationController extends Controller
         extract($data);
 
         if ($validator->passes()) {
-            return $authyApi->phoneVerificationStart($phone_number, $country_code, $via);
+            $response = $authyApi->phoneVerificationStart($phone_number, $country_code, $via);
+            return response()->json($response->message(), 200);
         }
 
         return response()->json(['errors'=>$validator->errors()], 403);

@@ -4,6 +4,9 @@ namespace Tests\Feature;
 
 use \Mockery;
 use Authy\AuthyApi;
+use Authy\AuthyResponse;
+use GuzzleHttp\Message\Response;
+use GuzzleHttp\Stream\Stream;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -39,6 +42,7 @@ class PhoneVerificationTest extends TestCase
                     'uuid' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
                 ]
             ])
+            ->andReturn(new AuthyResponse(new Response(200, [], Stream::factory('{"message": "success."}'))))
             ->once()
             ->with($phoneNumber, $countryCode, 'sms');
 
@@ -48,7 +52,7 @@ class PhoneVerificationTest extends TestCase
 
     public function testStartVerficationFails()
     {
-        $phoneNumber = '7075555555555';
+        $phoneNumber = '70755555555';
         $countryCode = '1';
 
         $params = [
