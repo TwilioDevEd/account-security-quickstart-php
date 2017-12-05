@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -49,7 +50,6 @@ class LoginController extends Controller
         isset($request->refresh_token) ?
             $refreshToken = $request->refresh_token : $refreshToken = null;
         $request->session()->regenerate();
-
         $this->clearLoginAttempts($request);
 
         return $this->authenticated($request, $this->guard()->user());

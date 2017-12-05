@@ -76,7 +76,11 @@ class PhoneVerificationController extends Controller
 
         if ($validator->passes()) {
             $response = $authyApi->phoneVerificationStart($phone_number, $country_code, $via);
-            return response()->json($response->message(), 200);
+            if ($response->ok()) {
+                return response()->json($response->message(), 200);
+            } else {
+                return response()->json((array)$response->errors(), 400);
+            }
         }
 
         return response()->json(['errors'=>$validator->errors()], 403);

@@ -98,11 +98,10 @@ class RegisterController extends Controller
             }
 
             $user = User::create($data);
+            $user->save();
 
             // Login the user
             Auth::login($user, true);
-
-            $user_id = session('user_id');
 
             return $user;
         }

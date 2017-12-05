@@ -10,6 +10,7 @@ use Authy\AuthyApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AccountSecurityController extends Controller
 {
@@ -42,14 +43,14 @@ class AccountSecurityController extends Controller
         Request $request,
         AuthyApi $authyApi
     ) {
-        $user_id = session('user_id');
-        $user = User::find($user_id);
-        $authyID = $user['authyID'];
+        $authyID = Auth::user()['authyID'];
         $response = $authyApi->requestSms($authyID, ['force' => 'true']);
 
-        Log::info($response->message());
-
-        return response()->json(['message' => 'Verification Code sent via SMS succesfully.']);
+        if ($response->ok()) {
+            return response()->json(['message' => 'Verification Code sent via SMS succesfully.']);
+        } else {
+            return response()->json($response->errors(), 500);
+        }
     }
 
 
@@ -63,12 +64,15 @@ class AccountSecurityController extends Controller
         Request $request,
         AuthyApi $authyApi
     ) {
-        $user_id = session('user_id');
-        $user = User::find($user_id);
-        $authyID = $user['authyID'];
+        $authyID = Auth::user()['authyID'];
+        $response = $authyApi->requestSms($authyID, ['force' => 'true']);
         $authyApi->phoneCall($authyID, ['force' => 'true']);
 
-        return response()->json(['message' => 'Verification Code sent via Voice Call succesfully.']);
+        if ($response->ok()) {
+            return response()->json(['message' => 'Verification Code sent via Voice Call succesfully.']);
+        } else {
+            return response()->json($response->errors(), 500);
+        }
     }
 
    /**
@@ -83,12 +87,15 @@ class AccountSecurityController extends Controller
     ) {
         $data = $request->all();
         $token = $data['token'];
-        $user_id = session('user_id');
-        $user = User::find($user_id);
-        $authyID = $user['authyID'];
-        $authyApi->verifyToken($authyID, $token);
+        $authyID = Auth::user()['authyID'];
 
-        return response()->json(['message' => 'Token verified successfully.']);
+        $response = $authyApi->verifyToken($authyID, $token);
+
+        if ($response->ok()) {
+            return response()->json(['message' => 'Token verified successfully.']);
+        } else {
+            return response()->json($response->errors(), 500);
+        }
     }
 
    /**
@@ -99,30 +106,33 @@ class AccountSecurityController extends Controller
     */
     protected function createOneTouch(
         Request $request,
-        OneTouch $oneTouch
+        AuthyApi $authyApi
     ) {
-        $data = $request->all();
-        $user_id = session('user_id');
-        $user = User::find($user_id);
+        $user = Auth::user();
         $authyID = $user['authyID'];
         $username =$user['username'];
 
-        $data = [
-          'message' => 'Twilio Account Security Quickstart wants authentication approval.',
-          'hidden' => 'this is a hidden value',
-          'visible' => [
-            'username' => $username,
-            'AuthyID' => $authyID,
-            'Location' => 'San Francisco, CA',
-            'Reason' => 'Demo by Account Security'
-          ],
-          'seconds_to_expire' => 120
-        ];
 
-        $onetouch_uuid = $oneTouch->createApprovalRequest($data);
-        session(['onetouch_uuid' => $onetouch_uuid]);
+        $response = $authyApi->oneTouchVerificationRequest(
+            $authyID,
+            'Twilio Account Security Quickstart wants authentication approval.',
+            120,
+            [
+                'username' => $username,
+                'AuthyID' => $authyID,
+                'Location' => 'San Francisco, CA',
+                'Reason' => 'Demo by Account Security'
+            ]
+        );
 
-        return response()->json(['message' => 'Token verified successfully.']);
+        if ($response->ok()) {
+            $approval_request = (array)$response->bodyvar('approval_request');
+            session(['onetouch_uuid' => $approval_request['uuid']]);
+
+            return response()->json(['message' => 'Token verified successfully.']);
+        } else {
+            return response()->json($response->errors(), 500);
+        }
     }
 
    /**
@@ -133,12 +143,18 @@ class AccountSecurityController extends Controller
     */
     protected function checkOneTouchStatus(
         Request $request,
-        OneTouch $oneTouch
+        AuthyApi $authyApi
     ) {
-        $response = $oneTouch->oneTouchStatus(session('onetouch_uuid'));
+        $authyID = Auth::user()['authyID'];
+        $response = $authyApi->oneTouchVerificationCheck($authyID, session('onetouch_uuid'));
 
-        session(['authy' => $body['approval_request']['status']]);
+        if ($response->ok()) {
+            $approval_request = (array)$response->bodyvar('approval_request');
+            session(['authy' => $approval_request['status']]);
 
-        return response()->json($response, 200);
+            return response()->json($response->body(), 200);
+        } else {
+            return response()->json($response->errors(), 500);
+        }
     }
 }

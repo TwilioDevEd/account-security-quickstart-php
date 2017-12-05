@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use \Mockery;
 use Authy\AuthyApi;
 use Authy\AuthyResponse;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -42,7 +42,7 @@ class PhoneVerificationTest extends TestCase
                     'uuid' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
                 ]
             ])
-            ->andReturn(new AuthyResponse(new Response(200, [], Stream::factory('{"message": "success."}'))))
+            ->andReturn(new AuthyResponse(new Response(200, [], Psr7\stream_for('{"message": "success."}'))))
             ->once()
             ->with($phoneNumber, $countryCode, 'sms');
 
