@@ -18,7 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/api/user/register', 'Auth\RegisterController@create');
+Route::middleware(['sessions'])->post('/api/user/register', 'Auth\RegisterController@create');
 
 Route::prefix('api/verification/')->group(function () {
     Route::post('start', 'Auth\PhoneVerificationController@startVerification');

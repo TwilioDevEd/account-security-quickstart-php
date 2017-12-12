@@ -103,7 +103,7 @@ class RegisterController extends Controller
             // Login the user
             Auth::login($user, true);
 
-            return $user;
+            return response()->json($user);
         }
 
         return response()->json(['errors'=>$validator->errors()], 403);
