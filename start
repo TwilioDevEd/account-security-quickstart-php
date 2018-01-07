@@ -10,10 +10,10 @@ function openNgrokUrl() {
 
   if [ "$(uname)" == "Darwin" ]; then
       # OSX
-      open $NGROK_URL
+      open "$NGROK_URL"
   else
       # Linux
-      xdg-open $NGROK_URL
+      xdg-open "$NGROK_URL" 
   fi
 }
 
@@ -28,7 +28,7 @@ function runMigrations() {
 }
 
 # stop old containers
-docker stop $(docker ps -a -q --filter "name=$CONTAINER_PREFIX") > /dev/null
+docker stop $(docker ps -a -q --filter "name=$CONTAINER_PREFIX") > /dev/null 2>&1
 
 # Install composer dependencies
 docker run --rm -it -v $(pwd):/app composer install
