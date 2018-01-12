@@ -6,14 +6,14 @@ CONTAINER_PREFIX=accountsecurityquickstartphp
 NETWORK=${CONTAINER_PREFIX}_default
 
 function openNgrokUrl() {
-  NGROK_URL=`curl -s http://127.0.0.1:4040/status | docker run -i debian:stretch-slim grep -P "https://.*?ngrok.io" -oh`
+  NGROK_URL=`curl -s http://0.0.0.0:8082/status | docker run -i debian:stretch-slim grep -P "https://.*?ngrok.io" -oh`
 
   if [ "$(uname)" == "Darwin" ]; then
       # OSX
       open "$NGROK_URL"
   else
       # Linux
-      xdg-open "$NGROK_URL" 
+      xdg-open "$NGROK_URL"
   fi
 }
 
@@ -53,9 +53,9 @@ sleep 10
 runMigrations
 
 # start ngrok
-docker run --name ${CONTAINER_PREFIX}_ngrok -p 0.0.0.0:4040:4040 --rm -d --link ${CONTAINER_PREFIX}_web_1 \
---net ${NETWORK} wernight/ngrok \
-ngrok http ${CONTAINER_PREFIX}_web_1:80 > /dev/null &
+docker run --name "${CONTAINER_PREFIX}_ngrok" -p 0.0.0.0:8082:4040 --rm -d --link "${CONTAINER_PREFIX}_web_1" \
+--net "${NETWORK}" wernight/ngrok \
+ngrok http "${CONTAINER_PREFIX}_web_1:80" > /dev/null &
 
 sleep 3
 
