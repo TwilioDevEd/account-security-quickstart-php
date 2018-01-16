@@ -60,7 +60,7 @@ sleep 10
 runMigrations
 
 # start ngrok
-docker run --name "${CONTAINER_PREFIX}_ngrok" -p 0.0.0.0:8082:4040 --rm -d --link "${CONTAINER_PREFIX}_web_1" \
+docker run --name "${CONTAINER_PREFIX}_ngrok" -p "0.0.0.0:8082:4040" --rm -d --link "${CONTAINER_PREFIX}_web_1" \
 --net "${NETWORK}" wernight/ngrok \
 ngrok http "${CONTAINER_PREFIX}_web_1:80" > /dev/null &
 
