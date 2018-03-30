@@ -7,14 +7,6 @@ NETWORK=${CONTAINER_PREFIX}_default
 
 function openNgrokUrl() {
   NGROK_URL=`curl -s http://0.0.0.0:8082/status | docker run -i debian:stretch-slim grep -P "https://.*?ngrok.io" -oh`
-
-  echo "
-##############################
-open the following url in your browser:
-$NGROK_URL
-##############################
-"
-
   if [ "$(uname)" == "Darwin" ]; then
       # OSX
       open "$NGROK_URL"

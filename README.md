@@ -4,8 +4,6 @@
 
 # Twilio Account Security Quickstart - Two-Factor Authentication and Phone Verification
 
-[![Docker Build Status](https://img.shields.io/docker/build/jrottenberg/ffmpeg.svg)]()
-
 
 A simple **PHP**, **Laravel** and **AngularJS** implementation of a website that uses Twilio Account
 Security services to protect all assets within a folder. Additionally, it shows a Phone
@@ -27,14 +25,7 @@ and Push Notification support.
 - Phone Verification
 - SMS or Voice Call
 
-### Run it (the easy way)
-
-1. Install [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/install/)
-1. `cp .env.example .env`
-1. Grab an Application API key from the [Dashboard](https://www.twilio.com/console/authy/getting-started) and paste it in `.env` as `API_KEY`
-1. `./start`
-
-### Run without Docker
+### Run it
 #### Pre-requisites
 
 - [PHP](http://php.net/archive/2017.php#id2017-10-27-1)
