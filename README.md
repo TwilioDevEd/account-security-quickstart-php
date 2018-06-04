@@ -50,8 +50,7 @@ see `.env.example` file
 
 ### Test
 
-1. Install [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/install/)
-1. `./test`
+1. `phpunit`
 
 ### License
 - MIT
