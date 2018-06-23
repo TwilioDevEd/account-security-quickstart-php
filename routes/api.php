@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('/', function () {
+    return file_get_contents(public_path().'/index.html'); 
+});
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -20,7 +23,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::middleware(['sessions'])->post('/api/user/register', 'Auth\RegisterController@create');
 
-Route::prefix('api/verification/')->group(function () {
+Route::prefix('api/verify/')->group(function () {
     Route::post('start', 'Auth\PhoneVerificationController@startVerification');
     Route::post('verify', 'Auth\PhoneVerificationController@verifyCode');
 });

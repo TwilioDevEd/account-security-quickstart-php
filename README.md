@@ -47,6 +47,7 @@ Ensure your MySQL credentials and host are set up in the env file, which you cop
 1. Grab an Application API key from the [Dashboard](https://www.twilio.com/console/authy/getting-started) and paste it in `.env` as `API_KEY`
 1. Run `php artisan migrate`
 1. Run `php artisan serve --port 8081`
+1. Go to localhost:8081 or see below.
 
 ### To try Authy Two-Factor Authentication
 1. Open the following url in your browser: `http://localhost:8081/login`
@@ -56,7 +57,7 @@ At that point you can test a channel. To test another, simply logout after your 
 ### To try Verify Phone Verification
 1. Open the following url in your browser: `http://localhost:8081/verify`
 
-At that point you can test a channel. To test another, simply logout after your success and login again.
+At that point you can test SMS/Phone Calls. To test another, simply logout after your success. You'll be brought back to the index page to try again with the other.
 
 ### Test
 
