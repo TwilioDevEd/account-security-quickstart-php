@@ -55,7 +55,7 @@ app.controller('AuthyController', function ($scope, $http, $window, $interval) {
         $http.get('/api/logout')
             .success(function (data, status, headers, config) {
                 console.log("Logout Response: ", data);
-                $window.location.href = $window.location.origin + "/2fa";
+                $window.location.href = $window.location.origin + "/login";
             })
             .error(function (data, status, headers, config) {
                 console.error("Logout Error: ", data);
