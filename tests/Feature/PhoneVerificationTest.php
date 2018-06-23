@@ -46,7 +46,7 @@ class PhoneVerificationTest extends TestCase
             ->once()
             ->with($phoneNumber, $countryCode, 'sms');
 
-        $response = $this->post('/api/verification/start', $params);
+        $response = $this->post('/api/verify/start', $params);
         $response->assertStatus(200);
     }
 
@@ -65,7 +65,7 @@ class PhoneVerificationTest extends TestCase
             ->shouldReceive('phoneVerificationStart')
             ->never();
 
-        $response = $this->post('/api/verification/start', $params);
+        $response = $this->post('/api/verify/start', $params);
         $response->assertStatus(403);
     }
 
@@ -87,7 +87,7 @@ class PhoneVerificationTest extends TestCase
             ->with($phoneNumber, $countryCode, $token);
 
 
-        $response = $this->post('/api/verification/verify', $params);
+        $response = $this->post('/api/verify/verify', $params);
         $response->assertStatus(200);
     }
 
@@ -107,7 +107,7 @@ class PhoneVerificationTest extends TestCase
             ->shouldReceive(['phoneVerificationCheck' => ''])
             ->never();
 
-        $response = $this->post('/api/verification/verify', $params);
+        $response = $this->post('/api/verify/verify', $params);
         $response->assertStatus(403);
     }
 }
