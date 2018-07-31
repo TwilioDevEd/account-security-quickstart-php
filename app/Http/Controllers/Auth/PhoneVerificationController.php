@@ -103,7 +103,11 @@ class PhoneVerificationController extends Controller
         if ($validator->passes()) {
             try {
                 $result = $authyApi->phoneVerificationCheck($phone_number, $country_code, $token);
-                return response()->json($result, 200);
+                if($result->ok()) {
+                  return response()->json($result, 200);
+                } else {
+                  throw new Exception('OTP verification failed');
+                }
             } catch (Exception $e) {
                 $response=[];
                 $response['exception'] = get_class($e);
