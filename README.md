@@ -45,6 +45,7 @@ Ensure your MySQL credentials and host are set up in the env file, which you cop
 1. Setup an Account Security app via the [Twilio Console](https://twilio.com/console).
 1. `cp .env.example .env`
 1. Grab an Application API key from the [Dashboard](https://www.twilio.com/console/authy/getting-started) and paste it in `.env` as `API_KEY`
+1. `source .env` on *nix
 1. Run `php artisan migrate`
 1. Run `php artisan serve --port 8081`
 1. Go to localhost:8081 or see below.
