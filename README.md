@@ -3,6 +3,7 @@
 </a>
 
 # Twilio Account Security Quickstart - Two-Factor Authentication and Phone Verification
+> We are currently in the process of updating this sample template. If you are encountering any issues with the sample, please open an issue at [github.com/twilio-labs/code-exchange/issues](https://github.com/twilio-labs/code-exchange/issues) and we'll try to help you.
 
 
 A simple **PHP**, **Laravel** and **AngularJS** implementation of a website that uses Twilio Account
