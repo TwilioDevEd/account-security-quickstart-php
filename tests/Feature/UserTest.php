@@ -12,10 +12,9 @@ class UserTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-        // $this->withoutExceptionHandling();
         $this->mockedAuthyApi = Mockery::mock(AuthyApi::class);
         app()->instance(AuthyApi::class, $this->mockedAuthyApi);
     }

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-docker run -v $(pwd):/var/www/html accountsecurityquickstartphp_app bash -c "./vendor/bin/phpunit"

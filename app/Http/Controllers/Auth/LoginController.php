@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -22,8 +21,6 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
-
     /**
      * Create a new controller instance.
      *
@@ -39,6 +36,23 @@ class LoginController extends Controller
         return 'username';
     }
 
+    public function login(Request $request)
+    {   
+        $input = $request->all();
+
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        if(Auth::guard()->attempt(array('username' => $input['username'], 'password' => $input['password'])))
+        {
+            return $this->sendLoginResponse($request);
+        }
+        
+        return redirect('/')->with('error','Email-Address And Password Are Wrong.');
+    }
+
     /**
      * Send the response after the user was authenticated.
      *
@@ -50,9 +64,8 @@ class LoginController extends Controller
         isset($request->refresh_token) ?
             $refreshToken = $request->refresh_token : $refreshToken = null;
         $request->session()->regenerate();
-        $this->clearLoginAttempts($request);
 
-        return $this->authenticated($request, $this->guard()->user());
+        return $this->authenticated($request, Auth::guard()->user());
     }
 
     /**
@@ -67,8 +80,13 @@ class LoginController extends Controller
         return response()->json(['message' => 'Logged in.'], 200);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard()->logout();
+
+        $request->session()->invalidate();
+
+        return response()->json(null, 200);
+
     }
 }

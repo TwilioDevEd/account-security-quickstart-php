@@ -5,6 +5,7 @@
 # Twilio Account Security Quickstart - Two-Factor Authentication and Phone Verification
 > We are currently in the process of updating this sample template. If you are encountering any issues with the sample, please open an issue at [github.com/twilio-labs/code-exchange/issues](https://github.com/twilio-labs/code-exchange/issues) and we'll try to help you.
 
+![](https://github.com/TwilioDevEd/account-security-quickstart-php/workflows/Laravel/badge.svg)
 
 A simple **PHP**, **Laravel** and **AngularJS** implementation of a website that uses Twilio Account
 Security services to protect all assets within a folder. Additionally, it shows a Phone
@@ -46,7 +47,7 @@ Ensure your MySQL credentials and host are set up in the env file, which you cop
 1. Setup an Account Security app via the [Twilio Console](https://twilio.com/console).
 1. `cp .env.example .env`
 1. Grab an Application API key from the [Dashboard](https://www.twilio.com/console/authy/getting-started) and paste it in `.env` as `API_KEY`
-1. `source .env` on *nix
+1. `touch database/database.sqlite`
 1. Run `php artisan migrate`
 1. Run `php artisan serve --port 8081`
 1. Go to localhost:8081 or see below.
@@ -63,7 +64,11 @@ At that point you can test SMS/Phone Calls. To test another, simply logout after
 
 ### Test
 
-1. `phpunit`
+1. `vendor/bin/phpunit`
 
-### License
-- MIT
+## Meta
+
+* No warranty expressed or implied. Software is as is. Diggity.
+* The CodeExchange repository can be found [here](https://github.com/twilio-labs/code-exchange/).
+* [MIT License](http://www.opensource.org/licenses/mit-license.html)
+* Lovingly crafted by Twilio Developer Education.

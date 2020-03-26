@@ -113,10 +113,9 @@ class AccountSecurityController extends Controller
         $username =$user['username'];
 
 
-        $response = $authyApi->oneTouchVerificationRequest(
+        $response = $authyApi->createApprovalRequest(
             $authyID,
             'Twilio Account Security Quickstart wants authentication approval.',
-            120,
             [
                 'username' => $username,
                 'AuthyID' => $authyID,
@@ -146,13 +145,13 @@ class AccountSecurityController extends Controller
         AuthyApi $authyApi
     ) {
         $authyID = Auth::user()['authyID'];
-        $response = $authyApi->oneTouchVerificationCheck($authyID, session('onetouch_uuid'));
+        $response = $authyApi->getApprovalRequest(session('onetouch_uuid'));
 
         if ($response->ok()) {
             $approval_request = (array)$response->bodyvar('approval_request');
             session(['authy' => $approval_request['status']]);
 
-            return response()->json($response->body(), 200);
+            return response()->json(['approval_request' => $approval_request], 200);
         } else {
             return response()->json($response->errors(), 500);
         }
