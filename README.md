@@ -27,33 +27,42 @@ and Push Notification support.
 - Phone Verification
 - SMS or Voice Call
 
+### How to get an Authy API Key
+You will need to create a new Authy application in the [console](https://www.twilio.com/console/authy/). After you give it a name you can view the generated Account Security production API key. This is the string you will later need to set up in your environmental variables.
+
+![Get Authy API Key](api_key.png)
+
 ### Run it
 #### Pre-requisites
 
-- [PHP](http://php.net/archive/2017.php#id2017-10-27-1)
+- [PHP](https://www.php.net/downloads)
 - [Composer](https://getcomposer.org/)
-- [Laravel](https://laravel.com/docs/5.5/#installing-laravel)
-- [MySQL](https://www.mysql.com/)
-
-Ensure your MySQL credentials and host are set up in the env file, which you copy from `.env.example`.
-
 
 1. Clone this repo
     ```bash
     git clone git@github.com:TwilioDevEd/account-security-quickstart-php.git
     ```
-1. `composer install`
+
+1. Run `composer install`
+
 1. Register for a [Twilio Account](https://www.twilio.com/).
+
 1. Setup an Account Security app via the [Twilio Console](https://twilio.com/console).
+
 1. `cp .env.example .env`
-1. Grab an Application API key from the [Dashboard](https://www.twilio.com/console/authy/getting-started) and paste it in `.env` as `API_KEY`
-1. `touch database/database.sqlite`
+
+1. Grab an Production API key from the Authy console and paste it in `.env` as `API_KEY`
+
+1. Create the database file with `touch database/database.sqlite`
+
 1. Run `php artisan migrate`
+
 1. Run `php artisan serve --port 8081`
-1. Go to localhost:8081 or see below.
+
+1. Go to [localhost:8081](http://localhost:8081) or see below.
 
 ### To try Authy Two-Factor Authentication
-1. Open the following url in your browser: `http://localhost:8081/login`
+1. Open the following url in your browser: [http://localhost:8081/login](http://localhost:8081/login)
 
 At that point you can test a channel. To test another, simply logout after your success and login again.
 
