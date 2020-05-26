@@ -2,7 +2,12 @@
 
 return [
 
-    'authy_api_key' => env('API_KEY', ''),
+    'twilio' => [
+        'account_sid' => env('TWILIO_ACCOUNT_SID'),
+        'auth_token' => env('TWILIO_AUTH_TOKEN'),
+        'verification_sid' => env('TWILIO_VERIFICATION_SID'),
+        'authy_api_key' => env('ACCOUNT_SECURITY_API_KEY', ''),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -176,6 +181,7 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         App\Providers\AuthyApiServiceProvider::class,
+        App\Providers\TwilioServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\OneTouchServiceProvider::class,

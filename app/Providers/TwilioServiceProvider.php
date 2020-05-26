@@ -3,10 +3,10 @@
 namespace App\Providers;
 
 use App\Library\Services\PhoneVerification;
-use Authy\AuthyApi;
+use Twilio\Rest\Client;
 use Illuminate\Support\ServiceProvider;
 
-class AuthyApiServiceProvider extends ServiceProvider
+class TwilioServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
@@ -25,9 +25,10 @@ class AuthyApiServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $api_key = config('app.twilio.authy_api_key');
-        $this->app->bind('Authy\AuthyApi', function () use ($api_key) {
-            return new AuthyApi(env('ACCOUNT_SECURITY_API_KEY'));
-        });
+        $this->app->bind(Client::class, function () {
+          $sid = config('app.twilio.account_sid');
+          $token = config('app.twilio.auth_token');
+          return new Client($sid, $token);
+      });
     }
 }

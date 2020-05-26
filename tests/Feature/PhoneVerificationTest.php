@@ -3,12 +3,9 @@
 namespace Tests\Feature;
 
 use \Mockery;
-use Authy\AuthyApi;
-use Authy\AuthyResponse;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Twilio\Rest\Client;
 
 class PhoneVerificationTest extends TestCase
 {
@@ -16,35 +13,37 @@ class PhoneVerificationTest extends TestCase
     {
         parent::setUp();
         $this->withoutExceptionHandling();
-        $this->mockedAuthyApi = Mockery::mock(AuthyApi::class);
-        app()->instance(AuthyApi::class, $this->mockedAuthyApi);
     }
 
     public function testStartVerificationSucceeds()
     {
-        $phoneNumber = '7075555555';
-        $countryCode = '1';
-
         $params = [
-          'country_code' => $countryCode,
-          'phone_number' => $phoneNumber,
-          'via' => 'sms'
+            'phone_number' => '+17075555555',
+            'via' => 'sms'
         ];
 
-        $this->mockedAuthyApi
-            ->shouldReceive([
-                'phoneVerificationStart' => [
-                    'carrier' => 'Radiomovil Dipsa (Telcel/America Movil)',
-                    'is_cellphone' => true,
-                    'message' => "SMS Message sent to +{$countryCode} {$phoneNumber}.",
-                    'seconds_to_expire' => 599,
-                    'success' => true,
-                    'uuid' => 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
-                ]
-            ])
-            ->andReturn(new AuthyResponse(new Response(200, [], Psr7\stream_for('{"message": "success."}'))))
-            ->once()
-            ->with($phoneNumber, $countryCode, 'sms');
+        $this->mock(Client::class, function ($mock) {
+            $mockVerifications = Mockery::mock();
+            $mockVerifications
+                ->shouldReceive('create')
+                ->with('+17075555555', 'sms')
+                ->andReturn((object) ['sid' => 1])
+                ->once();
+
+            $mockServicesReturn = Mockery::mock();
+            $mockServicesReturn->verifications = $mockVerifications;
+
+            $mockV2 = Mockery::mock();
+            $mockV2
+                ->shouldReceive('services')
+                ->withAnyArgs()
+                ->andReturn($mockServicesReturn)
+                ->once();
+
+            $mockVerify = Mockery::mock();
+            $mockVerify->v2 = $mockV2;
+            $mock->verify = $mockVerify;
+        });
 
         $response = $this->post('/api/verify/start', $params);
         $response->assertStatus(200);
@@ -52,18 +51,29 @@ class PhoneVerificationTest extends TestCase
 
     public function testStartVerficationFails()
     {
-        $phoneNumber = '70755555555';
-        $countryCode = '1';
-
         $params = [
-            'country_code' => $countryCode,
-            'phone_number' => $phoneNumber,
-            'via' => 'sms'
+            'phone_number' => '+17075555555',
+            'via' => 'not-valid-via'
         ];
 
-        $this->mockedAuthyApi
-            ->shouldReceive('phoneVerificationStart')
-            ->never();
+        $this->mock(Client::class, function ($mock) {
+            $mockVerifications = Mockery::mock();
+            $mockVerifications
+                ->shouldReceive('create')
+                ->never();
+
+            $mockServicesReturn = Mockery::mock();
+            $mockServicesReturn->verifications = $mockVerifications;
+
+            $mockV2 = Mockery::mock();
+            $mockV2
+                ->shouldReceive('services')
+                ->never();
+
+            $mockVerify = Mockery::mock();
+            $mockVerify->v2 = $mockV2;
+            $mock->verify = $mockVerify;
+        });
 
         $response = $this->post('/api/verify/start', $params);
         $response->assertStatus(403);
@@ -71,20 +81,33 @@ class PhoneVerificationTest extends TestCase
 
     public function testCodeVerificationSucceeds()
     {
-        $token = 'XXXX';
-        $phoneNumber = '7075555555';
-        $countryCode = '1';
-
         $params = [
-            'country_code' => $countryCode,
-            'phone_number' => $phoneNumber,
-            'token' => $token
+            'phone_number' => '+17075555555',
+            'token' => 'XXXX',
         ];
 
-        $this->mockedAuthyApi
-            ->shouldReceive(['phoneVerificationCheck' => []])
-            ->once()
-            ->with($phoneNumber, $countryCode, $token);
+        $this->mock(Client::class, function ($mock) {
+            $mockVerifications = Mockery::mock();
+            $mockVerifications
+                ->shouldReceive('create')
+                ->with('XXXX', ['to' => '+17075555555'])
+                ->andReturn((object) ['sid' => 1, 'status' => 'approved'])
+                ->once();
+
+            $mockServicesReturn = Mockery::mock();
+            $mockServicesReturn->verificationChecks = $mockVerifications;
+
+            $mockV2 = Mockery::mock();
+            $mockV2
+                ->shouldReceive('services')
+                ->withAnyArgs()
+                ->andReturn($mockServicesReturn)
+                ->once();
+
+            $mockVerify = Mockery::mock();
+            $mockVerify->v2 = $mockV2;
+            $mock->verify = $mockVerify;
+        });
 
 
         $response = $this->post('/api/verify/verify', $params);
@@ -93,19 +116,30 @@ class PhoneVerificationTest extends TestCase
 
     public function testCodeVerificationFails()
     {
-        $token = 'XXXX';
-        $phoneNumber = '70755555555';
-        $countryCode = '1';
-
         $params = [
-            'country_code' => $countryCode,
-            'phone_number' => $phoneNumber,
-            'token' => $token
+            'phone_number' => '+17075555555',
+            'token' => 'super-long-invalid-token',
         ];
 
-        $this->mockedAuthyApi
-            ->shouldReceive(['phoneVerificationCheck' => ''])
-            ->never();
+        $this->mock(Client::class, function ($mock) {
+            $mockVerifications = Mockery::mock();
+            $mockVerifications
+                ->shouldReceive('create')
+                ->never();
+
+            $mockServicesReturn = Mockery::mock();
+            $mockServicesReturn->verificationChecks = $mockVerifications;
+
+            $mockV2 = Mockery::mock();
+            $mockV2
+                ->shouldReceive('services')
+                ->never();
+
+            $mockVerify = Mockery::mock();
+            $mockVerify->v2 = $mockV2;
+            $mock->verify = $mockVerify;
+        });
+
 
         $response = $this->post('/api/verify/verify', $params);
         $response->assertStatus(403);
