@@ -94,6 +94,14 @@ After the above requirements have been met:
 
     That's it!
 
+### Docker
+
+If you have [Docker](https://www.docker.com/) already installed on your machine, you can use our `docker-compose.yml` to setup your project.
+
+1. Make sure you have the project cloned.
+2. Setup the `.env` file as outlined in the [Local Development](#local-development) steps.
+3. Run `docker-compose up`.
+
 ### To try Authy Two-Factor Authentication
 
 Open the following url in your browser: [http://localhost:8000/login](http://localhost:8000/login)
