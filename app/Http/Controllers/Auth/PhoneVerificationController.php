@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use \Exception;
 use App\Http\Controllers\Controller;
-use Authy\AuthyApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Twilio\Rest\Client;
+use Twilio\Exceptions\TwilioException;
+
 
 class PhoneVerificationController extends Controller
 {
@@ -21,13 +23,27 @@ class PhoneVerificationController extends Controller
     */
 
     /**
+     * @var Client
+     */
+    private $client;
+
+
+    /**
+     * @var string
+     */
+    private $verification_sid;
+
+    /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Client $client, string $verification_sid = null)
     {
         $this->middleware('guest');
+        $this->client = $client;
+        $this->verification_sid = $verification_sid ?: config('app.twilio.verification_sid');
+
     }
 
     /**
@@ -39,8 +55,7 @@ class PhoneVerificationController extends Controller
     protected function verificationRequestValidator(array $data)
     {
         return Validator::make($data, [
-            'country_code' => 'required|string|max:3',
-            'phone_number' => 'required|string|max:10',
+            'phone_number' => 'required|string',
             'via' => 'required|string|max:4',
         ]);
     }
@@ -54,8 +69,7 @@ class PhoneVerificationController extends Controller
     protected function verificationCodeValidator(array $data)
     {
         return Validator::make($data, [
-            'country_code' => 'required|string|max:3',
-            'phone_number' => 'required|string|max:10',
+            'phone_number' => 'required|string',
             'token' => 'required|string|max:10'
         ]);
     }
@@ -67,19 +81,21 @@ class PhoneVerificationController extends Controller
      * @return Illuminate\Support\Facades\Response;
      */
     protected function startVerification(
-        Request $request,
-        AuthyApi $authyApi
+        Request $request
     ) {
         $data = $request->all();
         $validator = $this->verificationRequestValidator($data);
         extract($data);
 
         if ($validator->passes()) {
-            $response = $authyApi->phoneVerificationStart($phone_number, $country_code, $via);
-            if ($response->ok()) {
-                return response()->json($response->message(), 200);
-            } else {
-                return response()->json((array)$response->errors(), 400);
+            try {
+                $verification = $this->client->verify->v2->services($this->verification_sid)
+                ->verifications
+                ->create($phone_number, $via);
+                return response()->json($verification->sid, 200);
+            } catch (TwilioException $exception) {
+                $message = "Verification failed to start: {$exception->getMessage()}";
+                return response()->json($message, 400);
             }
         }
 
@@ -93,8 +109,7 @@ class PhoneVerificationController extends Controller
      * @return Illuminate\Support\Facades\Response;
      */
     protected function verifyCode(
-        Request $request,
-        AuthyApi $authyApi
+        Request $request
     ) {
         $data = $request->all();
         $validator = $this->verificationCodeValidator($data);
@@ -102,19 +117,21 @@ class PhoneVerificationController extends Controller
 
         if ($validator->passes()) {
             try {
-                $result = $authyApi->phoneVerificationCheck($phone_number, $country_code, $token);
-                if($result->ok()) {
-                  return response()->json($result, 200);
-                } else {
-                  throw new Exception('OTP verification failed');
+                $verification_check = $this->client->verify->v2->services($this->verification_sid)
+                            ->verificationChecks
+                            ->create($token, ['to' => $phone_number]);
+                if ($verification_check->status === 'approved') {
+                    return response()->json($verification_check->sid, 200);
                 }
-            } catch (Exception $e) {
+                throw new Exception('OTP verification failed');
+            } catch (TwilioException $e) {
                 $response=[];
                 $response['exception'] = get_class($e);
                 $response['message'] = $e->getMessage();
                 $response['trace'] = $e->getTrace();
                 return response()->json($response, 403);
             }
+
         }
 
         return response()->json(['errors'=>$validator->errors()], 403);
