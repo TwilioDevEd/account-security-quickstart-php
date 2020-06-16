@@ -41,7 +41,7 @@ return [
 
         'testing' => [
             'driver'   => 'sqlite',
-            'database' => env('DB_DATABASE_TEST', database_path('database-test.sqlite')),
+            'database' => ':memory:',
             'prefix'   => '',
         ],
 
