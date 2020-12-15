@@ -7,7 +7,7 @@
     "require": {
         "php": "^7.2.5",
         "fideloper/proxy": "^4.3",
-        "laravel/framework": "^7.2",
+        "laravel/framework": "^8.18",
         "laravel/tinker": "^2.3",
         "twilio/sdk": "^6.1.0",
         "authy/php": "^3.0"
